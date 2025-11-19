@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProduitController!{% endblock %}
+
+{% block body %}
+
+    {% for produit in produits  %}
+        {{ produit.nom }}
+
+        {{ produit.category.nom }}
+
+
+        {% for tag in produit.tags %}
+            {{ tag.nom }}
+        {% endfor %}
+    {% endfor %}
+
+{% endblock %}
