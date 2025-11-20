@@ -52,7 +52,7 @@ final class ProduitController extends AbstractController
         ]);
     }
 
-    #[Route("/produits/create", name: 'app_produit_create')]
+    #[Route("/produits/new", name: 'app_produit_new')]
     public function create(Request $request): Response
     {
         $produit = new Produit();
@@ -73,7 +73,7 @@ final class ProduitController extends AbstractController
             return $this->redirectToRoute('app_produit');
         }
 
-        return $this->render('produit/create.html.twig', [
+        return $this->render('produit/new.html.twig', [
             "form" => $formulaire->createView()
         ]);
     }
