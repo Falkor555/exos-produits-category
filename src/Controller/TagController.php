@@ -57,23 +57,22 @@ class TagController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_tag_edit')]
-    public function edit(Request $request, Tag $tag): Response
+    #[Route('/{id}/edit', name: 'app_tag_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Tag $tag, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(TagType::class, $tag);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->flush();
+            $entityManager->flush();
 
-            $this->addFlash('success', 'Tag modifié avec succès !');
-
-            return $this->redirectToRoute('app_tag_index');
+            $this->addFlash('success', 'Le tag a été mis à jour avec succès.');
+            return $this->redirectToRoute('app_tag_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('tag/edit.html.twig', [
             'tag' => $tag,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 

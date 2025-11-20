@@ -4,13 +4,65 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-lg-6 offset-lg-3">
+        <div class="col-lg-8 offset-lg-2">
             <div class="card shadow-sm">
                 <div class="card-header bg-warning text-dark">
                     <h4 class="mb-0"><i class="bi bi-pencil"></i> Modifier le tag</h4>
                 </div>
                 <div class="card-body">
-                    {{ include('tag/form.html.twig', {'button_label': 'Mettre à jour'}) }}
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_row(form.nom) }}
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>{{ form_label(form.produits) }}</h5>
+                            <div class="row">
+                                {% for produit in form.produits %}
+                                    <div class="col-md-6">
+                                        <div class="form-check mb-2">
+                                            {{ form_widget(produit) }}
+                                            {{ form_label(produit, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {{ form_errors(form.produits) }}
+                        </div>
+
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-save"></i> Mettre à jour
+                        </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            {# Résumé des produits associés #}
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-box-seam"></i> Produits actuellement associés ({{ tag.produits|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if tag.produits is empty %}
+                        <p class="text-muted">Aucun produit associé à ce tag.</p>
+                    {% else %}
+                        <ul class="list-group">
+                            {% for produit in tag.produits %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ produit.nom }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ produit.prix }} €</small>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill">
+                                        <i class="bi bi-check-circle"></i> Associé
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 </div>
             </div>
 

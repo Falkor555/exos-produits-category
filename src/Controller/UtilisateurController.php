@@ -45,4 +45,27 @@ final class UtilisateurController extends AbstractController
             'controller_name' => 'UtilisateurController',
         ]);
     }
+
+    #[Route('/utilisateur/login', name: 'app_login', methods: ['GET'])]
+    public function login(): Response
+    {
+        return $this->render('utilisateur/login.html.twig', [
+            'controller_name' => 'UtilisateurController',
+        ]);
+    }
+
+    #[Route('/utilisateur/logout', name: 'app_logout')]
+    public function logout(): void
+    {
+
+    }
+
+    #[Route('utilisateur/signup', name: 'app_signup')]
+    public function signup(): Response
+    {
+        return $this->render('utilisateur/signup.html.twig', [
+            'controller_name' => 'UtilisateurController',
+        ]);
+    }
+
 }
