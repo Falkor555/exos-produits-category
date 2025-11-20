@@ -37,7 +37,8 @@ class Produit
     /**
      * @var Collection<int, Tag>
      */
-    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'produits')]
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'produits')]
+    #[ORM\JoinTable(name: 'produit_tag')]
     private Collection $tags;
 
     public function __construct()

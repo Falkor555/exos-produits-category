@@ -29,7 +29,7 @@
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ path('app_catalogue') }}">
+        <a class="navbar-brand" href="{{ path('app_home') }}">
             <i class="bi bi-shop"></i> Ma Boutique
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -81,7 +81,7 @@
         {% endfor %}
     {% endfor %}
 
-    {% block body %}{% endblock %}
+    {% block body %} {% endblock %}
 </div>
 
 <footer class="mt-5 py-4 bg-dark text-white-50">
