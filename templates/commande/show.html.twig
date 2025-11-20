@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande #{{ commande.id }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h1>Commande #{{ commande.id }}</h1>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Date:</strong> {{ commande.dateCommande|date('d/m/Y H:i') }}</p>
+                            <p><strong>Statut:</strong> <span class="badge bg-success">{{ commande.statut }}</span></p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h3 class="text-primary">Total: {{ commande.total }} €</h3>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">Produits commandés:</h4>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Sous-total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for ligne in commande.lignesCommande %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('app_produit_show', {'id': ligne.produit.id}) }}">
+                                        {{ ligne.produit.nom }}
+                                    </a>
+                                </td>
+                                <td>{{ ligne.prixUnitaire }} €</td>
+                                <td>{{ ligne.quantite }}</td>
+                                <td>{{ ligne.sousTotal|number_format(2, '.', '') }} €</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="{{ path('app_commande_index') }}" class="btn btn-secondary">Retour aux commandes</a>
+                <a href="{{ path('app_produit_catalogue') }}" class="btn btn-primary">Retour au catalogue</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -5,20 +5,15 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\Produit;
 use App\Entity\Tag;
+use App\Form\ProduitType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class ProduitController extends AbstractController
 {
-
     public function __construct(private EntityManagerInterface $entityManager)
     {
     }
@@ -26,12 +21,14 @@ final class ProduitController extends AbstractController
     #[Route('/produit', name: 'app_produit')]
     public function index(): Response
     {
+        $produits = $this->entityManager->getRepository(Produit::class)->findAll();
+
         return $this->render('produit/index.html.twig', [
-            'controller_name' => 'ProduitController',
+            'produits' => $produits,
         ]);
     }
 
-    #[Route('/produits.json', name: 'app_produits')]
+    #[Route('/produits.json', name: 'app_produits_json')]
     public function getAllJson(): Response
     {
         return $this->json($this->entityManager->getRepository(Produit::class)->findAll());
@@ -45,62 +42,110 @@ final class ProduitController extends AbstractController
         ]);
     }
 
+    #[Route('/catalogue', name: 'app_catalogue')]
+    public function catalogue(): Response
+    {
+        $produits = $this->entityManager->getRepository(Produit::class)->findBy(['isActive' => true]);
+
+        return $this->render('produit/catalogue.html.twig', [
+            'produits' => $produits,
+        ]);
+    }
+
     #[Route("/produits/create", name: 'app_produit_create')]
     public function create(Request $request): Response
     {
-        $produit= new Produit();
+        $produit = new Produit();
 
-        $formBuilder=$this->createFormBuilder( $produit);
-
-        $formBuilder->add('nom', TextType::class)
-            ->add('prix', MoneyType::class)
-            ->add('category', EntityType::class, ['class'=>Category::class])
-            ->add('submit', SubmitType::class);
-
-        $formulaire=$formBuilder->getForm();
+        $formulaire = $this->createForm(ProduitType::class, $produit);
         $formulaire->handleRequest($request);
-        if( $formulaire->isSubmitted() ){
-            var_dump("Le formulaire a été soumis");
-            $produitFormulaire=$formulaire->getData();
+
+        if ($formulaire->isSubmitted() && $formulaire->isValid()) {
+            $produitFormulaire = $formulaire->getData();
             $produitFormulaire->setIsActive(true);
             $produitFormulaire->setDateCreation(new \DateTime());
 
-
             $this->entityManager->persist($produitFormulaire);
             $this->entityManager->flush();
-        }
-        else{
-            var_dump("Le formulaire est tout neuf");
+
+            $this->addFlash('success', 'Produit créé avec succès !');
+
+            return $this->redirectToRoute('app_produit');
         }
 
         return $this->render('produit/create.html.twig', [
-            "truc" => $formulaire
+            "form" => $formulaire->createView()
         ]);
     }
+
+    #[Route('/produits/{id}', name: 'app_produit_show', requirements: ['id' => '\d+'])]
+    public function show(Produit $produit): Response
+    {
+        return $this->render('produit/show.html.twig', [
+            'produit' => $produit,
+        ]);
+    }
+
+    #[Route('/produits/{id}/edit', name: 'app_produit_edit')]
+    public function edit(Request $request, Produit $produit): Response
+    {
+        $formulaire = $this->createForm(ProduitType::class, $produit);
+        $formulaire->handleRequest($request);
+
+        if ($formulaire->isSubmitted() && $formulaire->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Produit modifié avec succès !');
+
+            return $this->redirectToRoute('app_produit');
+        }
+
+        return $this->render('produit/edit.html.twig', [
+            'produit' => $produit,
+            'form' => $formulaire->createView(),
+        ]);
+    }
+
+    #[Route('/produits/{id}/delete', name: 'app_produit_delete', methods: ['POST'])]
+    public function delete(Request $request, Produit $produit): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$produit->getId(), $request->request->get('_token'))) {
+            $this->entityManager->remove($produit);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Produit supprimé avec succès !');
+        }
+
+        return $this->redirectToRoute('app_produit');
+    }
+
     #[Route('/test', name: 'app_produit_test')]
     public function test(): Response
     {
-        $category=new Category();
+        $category = new Category();
         $category->setNom("Electronique");
 
-        $produit1=new Produit();
+        $produit1 = new Produit();
         $produit1->setNom("Laptop");
-        $produit1->setPrix("10");
+        $produit1->setPrix("999.99");
+        $produit1->setDescription("Ordinateur portable haute performance");
         $produit1->setDateCreation(new \DateTime());
         $produit1->setIsActive(true);
 
-        $produit2=new Produit();
+        $produit2 = new Produit();
         $produit2->setNom("Monitor");
-        $produit2->setPrix("20");
+        $produit2->setPrix("299.99");
+        $produit2->setDescription("Écran 27 pouces Full HD");
         $produit2->setDateCreation(new \DateTime());
         $produit2->setIsActive(true);
 
-        $tag1=new Tag();
+        $tag1 = new Tag();
         $tag1->setNom("Informatique");
-        $tag2=new Tag();
-        $tag2->setNom("Black firday");
+        $tag2 = new Tag();
+        $tag2->setNom("Black Friday");
 
         $produit1->addTag($tag1);
+        $produit1->addTag($tag2);
         $produit2->addTag($tag2);
         $produit1->setCategory($category);
 
@@ -115,8 +160,9 @@ final class ProduitController extends AbstractController
         $this->entityManager->persist($produit2);
 
         $this->entityManager->flush();
-        return $this->render('produit/index.html.twig', [
-            'controller_name' => 'ProduitController',
-        ]);
+
+        $this->addFlash('success', 'Données de test créées avec succès !');
+
+        return $this->redirectToRoute('app_produit');
     }
 }

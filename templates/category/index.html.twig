@@ -1,20 +1,51 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello CategoryController!{% endblock %}
+{% block title %}Liste des catégories{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-folder text-primary"></i> Catégories</h1>
+        <a href="{{ path('app_category_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nouvelle catégorie
+        </a>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/loicb/PhpstormProjects/exo-produits-category/src/Controller/CategoryController.php</code></li>
-        <li>Your template at <code>C:/Users/loicb/PhpstormProjects/exo-produits-category/templates/category/index.html.twig</code></li>
-    </ul>
-</div>
+    {% if categories is empty %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Aucune catégorie disponible. Créez-en une pour commencer !
+        </div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for category in categories %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-folder-fill text-primary"></i> {{ category.nom }}
+                            </h5>
+                            <p class="card-text text-muted">
+                                {{ category.description|default('Aucune description')|slice(0, 100) }}
+                                {% if category.description|length > 100 %}...{% endif %}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-secondary badge-custom">
+                                <i class="bi bi-box"></i> {{ category.produits|length }} produit(s)
+                            </span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top">
+                            <div class="d-flex gap-2">
+                                <a href="{{ path('app_category_show', {'id': category.id}) }}" class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a>
+                                <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn btn-sm btn-outline-warning flex-fill">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}

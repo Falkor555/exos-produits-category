@@ -1,20 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TagController!{% endblock %}
+{% block title %}Liste des tags{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-tags text-primary"></i> Tags</h1>
+        <a href="{{ path('app_tag_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nouveau tag
+        </a>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/loicb/PhpstormProjects/exo-produits-category/src/Controller/TagController.php</code></li>
-        <li>Your template at <code>C:/Users/loicb/PhpstormProjects/exo-produits-category/templates/tag/index.html.twig</code></li>
-    </ul>
-</div>
+    {% if tags is empty %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Aucun tag disponible. Créez-en un pour commencer !
+        </div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for tag in tags %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-tag-fill text-secondary" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h5 class="card-title">{{ tag.nom }}</h5>
+                            <p class="text-muted mb-0">
+                            <span class="badge bg-secondary badge-custom">
+                                <i class="bi bi-box"></i> {{ tag.produits|length }} produit(s)
+                            </span>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top">
+                            <div class="d-flex gap-2">
+                                <a href="{{ path('app_tag_show', {'id': tag.id}) }}" class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a>
+                                <a href="{{ path('app_tag_edit', {'id': tag.id}) }}" class="btn btn-sm btn-outline-warning flex-fill">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}

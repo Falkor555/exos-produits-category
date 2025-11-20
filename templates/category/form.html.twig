@@ -1,0 +1,11 @@
+{{ form_start(form) }}
+<div class="mb-3">
+    {{ form_row(form.nom, {'attr': {'class': 'form-control'}}) }}
+</div>
+<div class="mb-3">
+    {{ form_row(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+</div>
+<button class="btn btn-primary w-100">
+    <i class="bi bi-check-circle"></i> {{ button_label|default('Créer') }}
+</button>
+{{ form_end(form) }}
