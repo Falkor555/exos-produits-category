@@ -10,11 +10,19 @@
         </a>
     </div>
 
-    {% if produits is empty %}
+    {% if produits|length == 0 %}
         <div class="alert alert-info">
             <i class="bi bi-info-circle"></i> Aucun produit disponible. Créez-en un pour commencer !
         </div>
     {% else %}
+        {# Informations de pagination #}
+        <div class="mb-3">
+            <p class="text-muted">
+                Affichage de {{ produits|length }} produits 
+                ({{ produits.getTotalItemCount }} au total)
+            </p>
+        </div>
+
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for produit in produits %}
                 <div class="col">
@@ -39,12 +47,12 @@
                             </div>
                             <div class="d-flex flex-wrap gap-1 mb-2">
                                 {% if produit.category %}
-                                    <span class="badge bg-info badge-custom">
+                                    <span class="badge bg-info">
                                         <i class="bi bi-folder"></i> {{ produit.category.nom }}
                                     </span>
                                 {% endif %}
                                 {% for tag in produit.tags %}
-                                    <span class="badge bg-secondary badge-custom">
+                                    <span class="badge bg-secondary">
                                         <i class="bi bi-tag"></i> {{ tag.nom }}
                                     </span>
                                 {% endfor %}
@@ -68,6 +76,11 @@
                     </div>
                 </div>
             {% endfor %}
+        </div>
+
+        {# Navigation de pagination #}
+        <div class="navigation d-flex justify-content-center mt-4">
+            {{ knp_pagination_render(produits) }}
         </div>
     {% endif %}
 {% endblock %}

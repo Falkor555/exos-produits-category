@@ -6,25 +6,38 @@ use App\Entity\Category;
 use App\Entity\Produit;
 use App\Entity\Tag;
 use App\Form\ProduitType;
+use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/produit')]
 final class ProduitController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $entityManager)
     {
     }
 
-    #[Route('/produit', name: 'app_produit')]
-    public function index(): Response
+    #[Route(name: 'app_produit', methods: ['GET'])]
+    public function index(Request $request, ProduitRepository $produitRepository, PaginatorInterface $paginator): Response
     {
-        $produits = $this->entityManager->getRepository(Produit::class)->findAll();
+        // Récupérer la requête (query) pour tous les produits
+        $query = $produitRepository->createQueryBuilder('p')
+            ->orderBy('p.dateCreation', 'DESC')
+            ->getQuery();
+
+        // Paginer les résultats
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), // Numéro de page (défaut: 1)
+            20 // Nombre d'éléments par page
+        );
 
         return $this->render('produit/index.html.twig', [
-            'produits' => $produits,
+            'produits' => $pagination,
         ]);
     }
 
@@ -42,15 +55,15 @@ final class ProduitController extends AbstractController
         ]);
     }
 
-    #[Route('/catalogue', name: 'app_catalogue')]
-    public function catalogue(): Response
-    {
-        $produits = $this->entityManager->getRepository(Produit::class)->findBy(['isActive' => true]);
+    // #[Route('/catalogue', name: 'app_catalogue')]
+    // public function catalogue(): Response
+    // {
+    //     $produits = $this->entityManager->getRepository(Produit::class)->findBy(['isActive' => true]);
 
-        return $this->render('produit/catalogue.html.twig', [
-            'produits' => $produits,
-        ]);
-    }
+    //     return $this->render('produit/catalogue.html.twig', [
+    //         'produits' => $produits,
+    //     ]);
+    // }
 
     #[Route("/produits/new", name: 'app_produit_new')]
     public function create(Request $request): Response
