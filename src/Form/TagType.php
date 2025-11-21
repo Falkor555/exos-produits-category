@@ -18,15 +18,15 @@ class TagType extends AbstractType
                 'label' => 'Nom du tag',
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('produits', EntityType::class, [
-                'class' => Produit::class,
-                'choice_label' => 'nom',
-                'multiple' => true,
-                'expanded' => true, // Affiche des checkboxes
-                'label' => 'Produits associés',
-                'required' => false,
-                'attr' => ['class' => 'form-check-input']
-            ])
+//            ->add('produits', EntityType::class, [
+//                'class' => Produit::class,
+//                'choice_label' => 'nom',
+//                'multiple' => true,
+//                'expanded' => true, // Affiche des checkboxes
+//                'label' => 'Produits associés',
+//                'required' => false,
+//                'attr' => ['class' => 'form-check-input']
+//            ])
         ;
     }
 
