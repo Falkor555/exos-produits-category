@@ -63,8 +63,19 @@
                     </ul>
                 </li>
             </ul>
-            <a href="{{ path('app_panier_index') }}" class="btn btn-outline-light position-relative">
+            <a class="nav-link position-relative" href="{{ path('app_panier_index') }}">
                 <i class="bi bi-cart3"></i> Panier
+                {% set panier = app.session.get('panier', {}) %}
+                {% set totalArticles = 0 %}
+                {% for quantite in panier %}
+                    {% set totalArticles = totalArticles + quantite %}
+                {% endfor %}
+                {% if totalArticles > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ totalArticles }}
+                        <span class="visually-hidden">articles dans le panier</span>
+                    </span>
+                {% endif %}
             </a>
         </div>
     </div>
